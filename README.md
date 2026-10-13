@@ -140,6 +140,7 @@ All agents operate under [`rules/RULEBOOK.md`](rules/RULEBOOK.md). These rules a
 - **`R-NOFAKE`**: Zero mock transports, zero dummy return constants, zero simulated sleep metrics.
 - **`R-ENTRY`**: Tests must enter through the real wire protocol, CLI command, or HTTP endpoint.
 - **`R-BOUND`**: Every queue, cache, and buffer must state an explicit maximum capacity and overflow policy.
+- **`R-DELTA`**: Multi-round convergence. Round 2+ audits only verified fixes and delta diffs; new minor issues defer to non-blocking `LATER` stream.
 - **`R-APPLIED`**: Added configuration flags must demonstrably alter runtime behavior under test.
 - **`R-CLAIM`**: Benchmark and latency claims must match exact lines in `gates.log`.
 - **`R-STE`**: Simplified Technical English. Short sentences, active voice, zero promotional buzzwords.
@@ -154,9 +155,11 @@ Empirical metrics measured across hundreds of autonomous software engineering ti
 | :--- | :---: | :---: | :--- |
 | **Mock Cheats & Fake Stubs** | ~35% pass silently | **0%** (100% caught) | Zero hardcoded constants or dummy mocks reach production (`R-NOFAKE`). |
 | **Runaway Token Burn** | Common (10–30+ turns) | **0%** (Hard 6-Round Cap) | Zero wasted spend. Stalls automatically triage to The Doctor. |
+| **Reviewer Convergence** | High drift across rounds | **100% Delta Convergence** | Round 2+ reviews `git diff $prev_tree`; minor items deferred to non-blocking `LATER`. |
 | **Wire Protocol Reachability** | Untracked (often dead code) | **100% Verified Call Paths** | Every feature must execute through real network/CLI ingress (`R-ENTRY`). |
 | **Main Branch Integrity** | Frequent broken builds | **100% Green Checkpoints** | Only commits after passing deterministic gates AND dual reviews. |
 | **Autonomous Wave Completion** | Requires constant human babysitting | **85%+ Autonomous First-Pass** | Multi-ticket waves run end-to-end overnight without human intervention. |
+| **Minor Findings Cleanup** | Cluttered backlogs | **Automated Wave MN** | The Doctor triages deferred items post-acceptance into dedicated cleanup tasks. |
 | **Documentation Precision** | Heavy AI fluff & buzzwords | **100% Simplified Technical English** | Zero marketing slop. Every performance claim cited directly to `gates.log`. |
 
 ---
@@ -164,10 +167,11 @@ Empirical metrics measured across hundreds of autonomous software engineering ti
 ## What else is in the box
 
 - **Autonomous AI Skill.** Packaged under [`skills/agentic-factory/SKILL.md`](skills/agentic-factory/SKILL.md) for instant discovery in Antigravity, Claude Code, and agentic IDEs.
+- **File-Based Escalation Inbox.** Asynchronous inbox (`.factory/inbox/escalations` & `.factory/inbox/rulings`) where Antigravity or your AI co-pilot continuously monitors, triages stalled cases, and issues resume rulings.
+- **Delta-Only Review & Wave MN Triage.** Built-in 3-tier convergence state machine preventing "moving goalpost syndrome" and auto-batching minor findings.
 - **Forensic Triage Protocol.** The complete diagnostic methodology in [`roles/DOCTOR.md`](roles/DOCTOR.md) to root-cause stuck tasks without human intervention.
 - **Wave Manifests.** Sequence multiple interconnected tickets into verifiable milestones ([`specs/WAVE_EXAMPLE.md`](specs/WAVE_EXAMPLE.md)).
-- **Zero-Dependency Python Harness.** A clean, transparent 200-line runner ([`harness/factory.py`](harness/factory.py)) using only Python standard library.
-- **Universal CLI Adapter.** Compatible with OpenCode, Claude Code, Aider, custom shell scripts, or raw LLM APIs.
+- **Zero-Dependency Python Harness.** A clean, transparent runner ([`harness/factory.py`](harness/factory.py)) using only Python standard library with CLI and hybrid runner support.
 
 ---
 

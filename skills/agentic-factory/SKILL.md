@@ -72,11 +72,20 @@ Write the detected gate commands into `harness/config.json`:
     "qual_cmd": ""
   },
   "agents": {
-    "provider": "cli",
+    "runner_type": "cli",
     "builder_cmd": "opencode run --auto",
     "reviewer_a_cmd": "opencode run --auto",
     "reviewer_b_cmd": "opencode run --auto",
     "doctor_cmd": "opencode run --auto"
+  },
+  "inbox": {
+    "enabled": true,
+    "escalations_dir": ".factory/inbox/escalations",
+    "rulings_dir": ".factory/inbox/rulings"
+  },
+  "delta_convergence": {
+    "enabled": true,
+    "auto_triage_minor": true
   },
   "git": {
     "auto_commit": true,
@@ -89,7 +98,7 @@ Write the detected gate commands into `harness/config.json`:
 
 ## Step 4: Verify with Dry-Run Smoke Test
 
-Run a dry-run test to ensure the state machine, gates, and audit logging are functional:
+Run a dry-run test to ensure the state machine, gates, delta convergence, and inbox logging are functional:
 
 ```bash
 python harness/factory.py --dry-run --ticket specs/TICKET_TEMPLATE.md
@@ -98,11 +107,34 @@ python harness/factory.py --dry-run --ticket specs/TICKET_TEMPLATE.md
 Verify that:
 - Exit code is `0`.
 - `.factory/state/events.log` is generated.
-- Clean up any test state in `.factory/`.
+- Checkpoint commit and minor finding triage into `wave_mn.tsv` are simulated.
 
 ---
 
-## Step 5: Report Readiness to User
+## Step 5: Antigravity Co-Pilot & Inbox Monitoring
+
+Antigravity integrates directly as the **Escalation Desk ("CTO" Layer)**:
+1. **Inbox Checks**: Antigravity monitors `.factory/inbox/escalations/` for unresolved cases flagged by The Doctor or review round exhaustion:
+   ```bash
+   python harness/factory.py --check-inbox
+   ```
+2. **Interactive Triage**: When an escalation case appears, Antigravity analyzes the root cause from the case payload, presents the exact decision/tradeoff to the user in chat, and proposes the minimal fix.
+3. **Issuing Rulings**: Upon user confirmation, Antigravity deposits the ruling file into `.factory/inbox/rulings/<TICKET_ID>.json`:
+   ```json
+   {
+     "action": "resume",
+     "ruling": "<Prescriptive fix instructions or environment override>",
+     "approved_by": "CTO / Antigravity"
+   }
+   ```
+4. **Resuming Tasks**: Antigravity resumes the stalled task under the recorded ruling:
+   ```bash
+   python harness/factory.py --ticket specs/<TICKET>.md --resume
+   ```
+
+---
+
+## Step 6: Report Readiness to User
 
 Confirm to the user:
 1. The detected stack and configured gates in `harness/config.json`.

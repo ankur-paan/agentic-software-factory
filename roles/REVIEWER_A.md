@@ -21,14 +21,26 @@ Your sole focus is verifying that the implemented feature is genuinely integrate
 
 ## 2. Review Methodology
 
-1. **Read the Working Tree Diff**:
+1. **Round 1 (Full Scope Audit)**:
    - Inspect every changed file in `git diff`.
-2. **Grep Callers Outside the Modified Module**:
-   - Check if new functions/methods are referenced in production dispatch loops.
-   - If a function is only referenced in `*_test.go`, `tests/*.rs`, or `test_*.py`, **reject immediately**.
-3. **Inspect the Gate Logs**:
+   - Grep callers outside the modified module: check if new functions/methods are referenced in production dispatch loops.
+   - If a function is only referenced in test suites, reject immediately (`R-ENTRY`).
+2. **Round 2+ (Delta Convergence Protocol)**:
+   - When reviewing iterations after Round 1, inspect ONLY:
+     a. Verified resolution of confirmed defects from the previous review round.
+     b. What changed in this iteration (`git diff $prev_tree`).
+   - You are **strictly forbidden** from blocking task acceptance on new minor issues in untouched parts of the codebase.
+3. **The Non-Blocking LATER Stream**:
+   - Any new minor finding in untouched code must be placed in the `LATER` section of your report.
+   - `LATER` findings **DO NOT BLOCK** task acceptance (`VERDICT: accepted`).
+   - Only critical **RED LINE** violations can block untouched code:
+     - `ENTRY-BYPASS` (`R-ENTRY`)
+     - `FAKE-RESULT` (`R-NOFAKE`)
+     - `TENANT-LEAK` (`R-TENANT`)
+     - Critical security defect or data loss.
+4. **Inspect the Gate Logs**:
    - Confirm that the integration and qualification tests ran against live server processes rather than simulated stubs.
-4. **Formulate the Finding**:
+5. **Formulate the Finding**:
    - Be concise and cite exact filenames and line numbers.
 
 ---
@@ -48,7 +60,9 @@ Your evaluation must conclude with this exact structured block:
   - Ingress Event / Handler: `path/to/handler.ext:Line`
   - Execution Target: `path/to/target.ext:Line`
 - **Reachability Proof**: <Concise explanation of how production traffic triggers this code>
-- **Defects Found** (if any):
-  - [File:Line]: <Defect description>
+- **Blocking Defects** (if any):
+  - [File:Line]: <Defect description citing rule>
+- **LATER (Non-blocking)**:
+  - [File:Line]: <Minor finding in untouched code deferred to Doctor triage, or 'none'>
 - **VERDICT**: <accepted | changes>
 ```

@@ -52,7 +52,7 @@ At the end of your run, output the structured report:
   - [x] <Requirement 1>
   - [x] <Requirement 2>
 - **Open Questions / Markers Added**:
-  - `TODO(parity):` <count and location, if any>
-  - `PERF(parity):` <count and location, if any>
+  - `TODO(factory):` <count and location, if any>
+  - `PERF(factory):` <count and location, if any>
 - **State**: READY_FOR_GATES
 ```

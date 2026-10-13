@@ -71,3 +71,32 @@ All diagnostic reports must follow this structure:
 
 DOCTOR-ACTION: <resume | ticket | unhold | escalate <One-sentence decision statement>>
 ```
+
+---
+
+## 5. Minor Findings Triage (Post-Acceptance)
+
+From the second review round onward, non-blocking findings deferred to the `LATER` list are handed to the Doctor upon task acceptance:
+1. **Timing**: Triage `LATER` lists only when no active stalled or held cases are pending.
+2. **Evaluation**: For each finding on the list, inspect the working tree and the task ticket spec, then issue **exactly one** ruling:
+   - **`VALID`**: Real defect confirmed in current code, backed by the spec or rulebook.
+     Format: `VALID | <area> | <file>:<line> | <what is wrong> | <what to change>`
+   - **`SCOPE-CREEP`**: The reviewer asked for more than the spec/rulebook required. Discarded.
+     Format: `SCOPE-CREEP | <file>:<line> | <finding> | <reason>`
+   - **`CORRECTED`**: Already fixed by subsequent commits.
+     Format: `CORRECTED | <file>:<line> | <finding>`
+   - **`DUPLICATE`**: Redundant entry.
+     Format: `DUPLICATE | <file>:<line> | <finding>`
+   - **`SERIOUS`**: The finding is critical (fake result, entry bypass, tenant leak, security flaw). Immediately escalated to the human lead.
+     Format: `SERIOUS | <file>:<line> | <finding> | <why serious>`
+3. **Wave MN Bundling**: Valid findings are aggregated by area into tasks of **Wave `MN` (Minor Cleanup)**, scheduled as the final wave of the lane.
+
+---
+
+## 6. File-Based Escalation Inbox Protocol
+
+When the Doctor issues an `escalate` ruling:
+1. The case file is deposited in `.factory/inbox/escalations/<case_id>.json`.
+2. Antigravity monitors the inbox, alerts the human lead in the IDE, and prompts for the architectural or environmental ruling.
+3. The resulting ruling is written to `.factory/inbox/rulings/<case_id>.json`.
+4. The orchestrator unparks the task and resumes execution under the recorded ruling.

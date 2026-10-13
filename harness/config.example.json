@@ -9,11 +9,21 @@
     "qual_cmd": ""
   },
   "agents": {
-    "provider": "cli",
+    "runner_type": "cli",
     "builder_cmd": "opencode run --auto",
     "reviewer_a_cmd": "opencode run --auto",
     "reviewer_b_cmd": "opencode run --auto",
     "doctor_cmd": "opencode run --auto"
+  },
+  "inbox": {
+    "enabled": true,
+    "escalations_dir": ".factory/inbox/escalations",
+    "rulings_dir": ".factory/inbox/rulings"
+  },
+  "delta_convergence": {
+    "enabled": true,
+    "auto_triage_minor": true,
+    "wave_mn_output": ".factory/state/wave_mn.tsv"
   },
   "git": {
     "auto_commit": true,

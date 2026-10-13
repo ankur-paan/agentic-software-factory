@@ -40,6 +40,12 @@
 - Worker agents must never run commands that manipulate Git history (`git commit`, `git checkout`, `git reset`, `git clean`, `git push`).
 - Edits are left in the working tree. The orchestrator harness verifies gates and collects dual review approvals before creating a permanent checkpoint commit.
 
+### `R-DELTA`: Delta-Only Convergence & Non-Blocking Findings
+- From review round 2 onward, reviewers verify confirmed fixes from the previous round and review only what changed (`git diff $prev_tree`).
+- Reviewers are forbidden from blocking task acceptance on new minor issues in untouched parts of the codebase.
+- New minor findings on untouched code are recorded in a non-blocking `LATER` section, and triaged post-acceptance by The Doctor into Wave `MN`.
+- Only critical safety red lines (`R-NOFAKE`, wire bypass, tenant leaks, or security vulnerabilities) may block untouched code.
+
 ---
 
 ## 2. Standard Code Markers
