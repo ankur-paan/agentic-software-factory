@@ -21,20 +21,24 @@ Most AI coding agents are configured as single chatbots. They write code, test t
 The **Agentic Software Factory** replaces the conversational chatbot with an **industrial software assembly line**.
 
 ```mermaid
-flowchart LR
+flowchart TD
     Ticket[1. Ticket Spec] --> Builder[2. Builder]
     Builder --> Gates[3. Deterministic Gates]
-    Gates -->|Pass| RevPair{4. Dual Reviewers}
-    Gates -->|Fail| Builder
-    RevPair -->|Accepted| Git[5. Checkpoint Commit]
-    RevPair -->|Changes| Builder
-    Builder -.->|Round Limit Exceeded| Doctor[6. The Doctor]
+    Gates -->|Fail: gate log| Builder
+    Gates -->|Pass| RevPair{4. Dual Reviewers A & B}
+    RevPair -->|Round > 1: Delta Only| Builder
+    RevPair -->|Accepted + LATER stream| Git[5. Checkpoint Commit]
+    Git --> Triage[6. Doctor Triage] --> WaveMN[Wave MN: Minor Cleanup]
+    Builder -.->|Round Limit Exceeded| Doctor[7. The Doctor Pathologist]
+    Doctor -->|SERIOUS / Escalation| Inbox[8. File-Based Inbox & Co-Pilot]
+    Inbox -.->|Resume Ruling| Builder
 ```
 
 ### What changes when you put it in the path:
 
 - **Zero self-approving hallucination.** The Builder writes code, but can neither test nor approve its own diff.
 - **Zero mock cheats.** Hard constitutional rules (`R-NOFAKE`, `R-ENTRY`) ban mock stubs. Integration tests run against live containers.
+- **Zero moving goalposts.** Multi-round convergence (`R-DELTA`) restricts round 2+ reviews to confirmed defects and diffs; minor items defer to non-blocking triage.
 - **Zero runaway token loops.** Rounds are strictly capped (default 6). Stalled work transfers to **The Doctor** for forensic classification.
 - **Zero Git state vandalism.** Agents are denied `git commit` and `git checkout`. The pipeline harness creates checkpoints only upon dual sign-off.
 
@@ -78,23 +82,23 @@ python harness/factory.py --dry-run --ticket specs/TICKET_TEMPLATE.md
 **Watch the assembly line in real time:**
 
 ```text
-[2026-10-13 16:50:41] ==================================================
-[2026-10-13 16:50:41] Starting Execution for Ticket: TICKET_TEMPLATE
-[2026-10-13 16:50:41] ==================================================
-[2026-10-13 16:50:41] >>> ROUND 1/6 for TICKET_TEMPLATE <<<
-[2026-10-13 16:50:41] Dispatching Builder for TICKET_TEMPLATE (Round 1)
-[2026-10-13 16:50:41] --- Running Deterministic Gates for TICKET_TEMPLATE ---
-[2026-10-13 16:50:41] [PASS] Gate compile_cmd passed.
-[2026-10-13 16:50:41] [PASS] Gate lint_cmd passed.
-[2026-10-13 16:50:41] [PASS] Gate test_cmd passed.
-[2026-10-13 16:50:41] Dispatching Reviewer A for TICKET_TEMPLATE (Round 1)
-[2026-10-13 16:50:41] Dispatching Reviewer B for TICKET_TEMPLATE (Round 1)
-[2026-10-13 16:50:41] Review Results: Reviewer A = ACCEPTED, Reviewer B = ACCEPTED
-[2026-10-13 16:50:41] [SUCCESS] Ticket TICKET_TEMPLATE ACCEPTED by both Reviewers!
-[2026-10-13 16:50:41] Creating Git Checkpoint: checkpoint TICKET_TEMPLATE
+[2026-10-13 18:18:01] Starting Execution for Ticket: TICKET_TEMPLATE (resume=False)
+[2026-10-13 18:18:01] >>> ROUND 1/6 for TICKET_TEMPLATE <<<
+[2026-10-13 18:18:01] Dispatching Builder for TICKET_TEMPLATE (Round 1)
+[2026-10-13 18:18:01] --- Running Deterministic Gates for TICKET_TEMPLATE (Round 1) ---
+[2026-10-13 18:18:01] [PASS] Gate compile_cmd passed.
+[2026-10-13 18:18:01] [PASS] Gate lint_cmd passed.
+[2026-10-13 18:18:01] [PASS] Gate test_cmd passed.
+[2026-10-13 18:18:01] Dispatching Reviewer A for TICKET_TEMPLATE (Round 1)
+[2026-10-13 18:18:01] Dispatching Reviewer B for TICKET_TEMPLATE (Round 1)
+[2026-10-13 18:18:01] Review Results: Reviewer A = ACCEPTED (1 later), Reviewer B = ACCEPTED (1 later)
+[2026-10-13 18:18:01] [SUCCESS] Ticket TICKET_TEMPLATE ACCEPTED by both Reviewers!
+[2026-10-13 18:18:01] Creating Git Checkpoint: checkpoint TICKET_TEMPLATE: Implemented TICKET_TEMPLATE
+[2026-10-13 18:18:01] [DOCTOR-TRIAGE] Triaging 1 deferred minor findings for TICKET_TEMPLATE
+[2026-10-13 18:18:01] [DOCTOR-TRIAGE] Successfully bundled 1 findings into wave_mn.tsv
 ```
 
-All execution traces and accepted tickets are recorded under `.factory/state/` (`events.log`, `accepted.txt`).
+All execution traces, inbox cases, and accepted checkpoints are recorded under `.factory/` (`state/events.log`, `inbox/`, `state/wave_mn.tsv`).
 
 ---
 
