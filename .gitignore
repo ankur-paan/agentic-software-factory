@@ -1,0 +1,18 @@
+# Factory state & runtime logs
+.factory/
+*.log
+*.diff
+
+# Dependencies and build artifacts
+target/
+node_modules/
+dist/
+__pycache__/
+*.pyc
+
+# OS & IDE metadata
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp

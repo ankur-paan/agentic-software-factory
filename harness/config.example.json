@@ -1,0 +1,22 @@
+{
+  "project_name": "My autonomous software",
+  "workspace_dir": ".",
+  "max_rounds": 6,
+  "gates": {
+    "compile_cmd": "echo 'compiling...' && exit 0",
+    "lint_cmd": "echo 'linting...' && exit 0",
+    "test_cmd": "echo 'running tests...' && exit 0",
+    "qual_cmd": ""
+  },
+  "agents": {
+    "provider": "cli",
+    "builder_cmd": "opencode run --auto",
+    "reviewer_a_cmd": "opencode run --auto",
+    "reviewer_b_cmd": "opencode run --auto",
+    "doctor_cmd": "opencode run --auto"
+  },
+  "git": {
+    "auto_commit": true,
+    "commit_prefix": "checkpoint"
+  }
+}
