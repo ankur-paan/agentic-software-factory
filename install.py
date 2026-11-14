@@ -22,6 +22,7 @@ FILES_TO_FETCH = [
     ("roles/HARNESS_EDITOR.md", "roles/HARNESS_EDITOR.md"),
     ("roles/REFLECTOR.md", "roles/REFLECTOR.md"),
     ("roles/DOCTOR.md", "roles/DOCTOR.md"),
+    ("roles/INTEGRATOR.md", "roles/INTEGRATOR.md"),
     ("rules/RULEBOOK.md", "rules/RULEBOOK.md"),
     ("rules/LESSONS.md", "rules/LESSONS.md"),
     ("specs/SPEC_STANDARD.md", "specs/SPEC_STANDARD.md"),

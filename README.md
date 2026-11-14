@@ -36,8 +36,13 @@ flowchart TD
     Arbiter -->|ARBITER: accept| Gates
     Gates -->|Fail: gfix| Builder
     Gates -->|Pass| Git[8. Checkpoint & Reflector]
-    Git --> Triage[9. Doctor Triage] --> WaveMN[Wave MN: Minor Cleanup]
-    Builder -.->|Round Limit Exhausted| Park[Park refs/stopped] --> Doctor[10. The Doctor]
+    Git -->|refs/inbox| Integrator[9. Integrator Merge Queue]
+    Integrator -->|Conflict: Resolver + Reviewer| Integrator
+    Integrator -->|Precheck + Gates Fail: int-gfix <= 2| Integrator
+    Integrator -.->|Pass: trunk + lane_sync| SpecCheck
+    Integrator -->|Bounced: refs/bounced| Inbox
+    Git --> Triage[10. Doctor Triage] --> WaveMN[Wave MN: Minor Cleanup]
+    Builder -.->|Round Limit Exhausted| Park[Park refs/stopped] --> Doctor[11. The Doctor]
     Doctor -->|Escalate| Inbox
     Inbox -.->|Resume Ruling| Builder
 ```

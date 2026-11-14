@@ -47,9 +47,10 @@ Fetch or generate the template files:
 5. `roles/ARBITER.md`: Evidence-based judge for reviewer disagreements and missing evidence sections.
 6. `roles/HARNESS_EDITOR.md` & `roles/REFLECTOR.md`: Recursive Harnessing (Harness²) task edits and distilled lessons.
 7. `roles/DOCTOR.md`: Forensic triage protocol and root-cause classification (`TASK`, `PRODUCT`, `TEST`, `SPEC`, `PROCESS`, `UNKNOWN`).
-8. `rules/RULEBOOK.md` & `rules/LESSONS.md`: Engineering constitution and distilled lessons.
-9. `specs/SPEC_STANDARD.md`, `specs/TICKET_TEMPLATE.md`, `specs/WAVE_EXAMPLE.md`: Spec standard and templates.
-10. `harness/HARNESS.md`, `harness/factory.py`, `harness/model_broker.py`, `harness/integrator.py`: Orchestrator, optional model broker, and multi-lane integrator.
+8. `roles/INTEGRATOR.md`: Multi-lane Merge Queue sub-roles (Conflict Resolver, Conflict Reviewer, Integration Fixer).
+9. `rules/RULEBOOK.md` & `rules/LESSONS.md`: Engineering constitution and distilled lessons.
+10. `specs/SPEC_STANDARD.md`, `specs/TICKET_TEMPLATE.md`, `specs/WAVE_EXAMPLE.md`: Spec standard and templates.
+11. `harness/HARNESS.md`, `harness/factory.py`, `harness/model_broker.py`, `harness/integrator.py`: Orchestrator, optional model broker, and multi-lane integrator.
 
 Alternatively, execute the automated fetcher:
 ```bash

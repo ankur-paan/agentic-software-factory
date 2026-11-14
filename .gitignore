@@ -1,5 +1,7 @@
 # Factory state & runtime logs
 .factory/
+brag-output/
+brag-output-*/
 *.log
 *.diff
 

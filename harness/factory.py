@@ -468,7 +468,8 @@ class FactoryOrchestrator:
             log_file.write_text(text, encoding="utf-8")
             return "accepted", [f"{ticket_id}.ext:42: minor comment typo"], text
 
-        reviewer_cmd = self.config.get("agents", {}).get(f"reviewer_{role.lower()}_cmd")
+        agents_cfg = self.config.get("agents", {})
+        reviewer_cmd = agents_cfg.get(f"reviewer_{role.lower()}_cmd") or agents_cfg.get("reviewer_a_cmd")
         model = self.broker_pick(exclude=[author_model] if author_model else None)
         cmd_args = f"--role {role} --ticket {ticket_file}"
         if round_num > 1 and prev_tree:
