@@ -1,19 +1,44 @@
 {
   "project_name": "My autonomous software",
   "workspace_dir": ".",
-  "max_rounds": 6,
-  "gates": {
+  "max_rounds": 5,
+  "spec_check": {
+    "enabled": true,
+    "max_revisions": 1
+  },
+  "precheck": {
+    "format_cmd": "echo 'formatting...' && exit 0",
     "compile_cmd": "echo 'compiling...' && exit 0",
     "lint_cmd": "echo 'linting...' && exit 0",
+    "max_fixes": 4
+  },
+  "gates": {
     "test_cmd": "echo 'running tests...' && exit 0",
-    "qual_cmd": ""
+    "bench_cmd": "",
+    "qual_cmd": "",
+    "max_fixes": 4
   },
   "agents": {
     "runner_type": "cli",
+    "spec_reader_cmd": "opencode run --auto",
     "builder_cmd": "opencode run --auto",
     "reviewer_a_cmd": "opencode run --auto",
     "reviewer_b_cmd": "opencode run --auto",
+    "arbiter_cmd": "opencode run --auto",
+    "harness_editor_cmd": "opencode run --auto",
+    "reflector_cmd": "opencode run --auto",
     "doctor_cmd": "opencode run --auto"
+  },
+  "harness": {
+    "enabled": true,
+    "lessons_file": "rules/LESSONS.md"
+  },
+  "model_broker": {
+    "enabled": false,
+    "url": "http://127.0.0.1:8787"
+  },
+  "doctor": {
+    "max_cases_per_ticket": 2
   },
   "inbox": {
     "enabled": true,
@@ -27,6 +52,7 @@
   },
   "git": {
     "auto_commit": true,
-    "commit_prefix": "checkpoint"
+    "commit_prefix": "checkpoint",
+    "park_stopped": true
   }
 }

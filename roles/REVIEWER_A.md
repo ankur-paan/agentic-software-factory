@@ -53,13 +53,14 @@ Your evaluation must conclude with this exact structured block:
 ## Reviewer A: Evaluation Report
 
 - **Ticket ID**: <e.g., CORE-01>
-- **Files Inspected**:
+- **FILES READ**:
   - `path/to/file.ext` (Lines X-Y)
-- **Call Graph Evidence**:
+- **REACHABILITY**:
   - Production Entrypoint: `path/to/entry.ext:Line`
   - Ingress Event / Handler: `path/to/handler.ext:Line`
   - Execution Target: `path/to/target.ext:Line`
-- **Reachability Proof**: <Concise explanation of how production traffic triggers this code>
+  - Proof: <Concise explanation of how production traffic triggers this code>
+- **SLOP**: <None | File:Line - Any anti-slop or unverified claim observed>
 - **Blocking Defects** (if any):
   - [File:Line]: <Defect description citing rule>
 - **LATER (Non-blocking)**:

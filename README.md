@@ -7,6 +7,8 @@
 
 [Try it in 60s](#try-it-in-60-seconds) · [Where it fits](#where-it-fits) · [The 4 roles](#the-4-roles) · [Is it a fit?](#is-it-a-fit) · [Common patterns](#common-patterns)
 
+![Agentic Software Factory Assembly Line](assets/factory-pipeline.gif)
+
 ---
 
 ## Where it fits
@@ -22,15 +24,21 @@ The **Agentic Software Factory** replaces the conversational chatbot with an **i
 
 ```mermaid
 flowchart TD
-    Ticket[1. Ticket Spec] --> Builder[2. Builder]
-    Builder --> Gates[3. Deterministic Gates]
-    Gates -->|Fail: gate log| Builder
-    Gates -->|Pass| RevPair{4. Dual Reviewers A & B}
-    RevPair -->|Round > 1: Delta Only| Builder
-    RevPair -->|Accepted + LATER stream| Git[5. Checkpoint Commit]
-    Git --> Triage[6. Doctor Triage] --> WaveMN[Wave MN: Minor Cleanup]
-    Builder -.->|Round Limit Exceeded| Doctor[7. The Doctor Pathologist]
-    Doctor -->|SERIOUS / Escalation| Inbox[8. File-Based Inbox & Co-Pilot]
+    Ticket[1. Ticket Spec] --> SpecCheck[2. Spec Reader Gate]
+    SpecCheck -->|not-ready| Inbox[Inbox Escalation]
+    SpecCheck -->|ready| Builder[3. Builder]
+    Builder --> Precheck[4. Fast Precheck]
+    Precheck -->|Fail: pfix| Builder
+    Precheck -->|Pass| RevPair{5. Dual Reviewers A & B}
+    RevPair -->|Disagree / Missing Evidence| Arbiter[6. Arbiter]
+    Arbiter -->|ARBITER: changes| HarnessEdit[Harness^2 Editor] --> Builder
+    RevPair -->|Accepted| Gates[7. Full Gates & Qual]
+    Arbiter -->|ARBITER: accept| Gates
+    Gates -->|Fail: gfix| Builder
+    Gates -->|Pass| Git[8. Checkpoint & Reflector]
+    Git --> Triage[9. Doctor Triage] --> WaveMN[Wave MN: Minor Cleanup]
+    Builder -.->|Round Limit Exhausted| Park[Park refs/stopped] --> Doctor[10. The Doctor]
+    Doctor -->|Escalate| Inbox
     Inbox -.->|Resume Ruling| Builder
 ```
 

@@ -1,29 +1,28 @@
-# Ticket Spec Template: <TICKET-ID> - <Short Title>
+# Ticket Spec: <TICKET-ID> - <Short Title>
 
-Read `rules/RULEBOOK.md` before touching any code.
+Read `rules/RULEBOOK.md` and `rules/LESSONS.md` before touching any code.
 
 Your workspace is the project working tree. Leave changes in the working tree. Do not mutate git state. Implement nothing outside this specification.
 
 ---
 
-## 1. Context & Objective
-<Brief 2-3 sentence overview of the goal, defect, or feature.>
+## 1. Task
+<One line that states what the task does and why.>
 
-## 2. Target Files & Boundaries
-- Allowed edits:
-  - `src/subsystem/...`
-  - `tests/integration/...`
-- Prohibited edits: Any files outside the allowed list.
+## 2. Behaviour
+<What a user or client sees when the task is done. Observable behaviour only; put file/code details in section 3.>
 
-## 3. What to Do
-1. <Step 1: Specific change in named file>
-2. <Step 2: Wire into runtime dispatcher / entrypoint>
-3. <Step 3: Add integration qualification test>
+## 3. Files
+- `src/subsystem/example.ext`: change: <specific change and reason>
+- `tests/integration/test_example.ext`: create: <integration test through real entrypoint>
 
-## 4. Done When (Verification Criteria)
+## 4. Not in scope
+- <Thing this task must not do or change>
+
+## 5. Done when
 - [ ] Compiles cleanly with zero compiler warnings.
 - [ ] Passes project linter and typecheckers.
-- [ ] A dedicated integration test named `<test_name>` passes, invoking the feature via the production entrypoint.
+- [ ] Dedicated integration test `<test_name>` passes through the real production entrypoint.
 - [ ] Zero rule violations (`R-NOFAKE`, `R-ENTRY`, `R-BOUND`, `R-STE`).
 - [ ] No existing checks or test thresholds are made weaker.
 

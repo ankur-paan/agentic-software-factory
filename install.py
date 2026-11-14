@@ -14,14 +14,23 @@ from pathlib import Path
 BASE_RAW_URL = "https://raw.githubusercontent.com/ankur-paan/agentic-software-factory/main"
 
 FILES_TO_FETCH = [
+    ("roles/SPEC_READER.md", "roles/SPEC_READER.md"),
     ("roles/BUILDER.md", "roles/BUILDER.md"),
     ("roles/REVIEWER_A.md", "roles/REVIEWER_A.md"),
     ("roles/REVIEWER_B.md", "roles/REVIEWER_B.md"),
+    ("roles/ARBITER.md", "roles/ARBITER.md"),
+    ("roles/HARNESS_EDITOR.md", "roles/HARNESS_EDITOR.md"),
+    ("roles/REFLECTOR.md", "roles/REFLECTOR.md"),
     ("roles/DOCTOR.md", "roles/DOCTOR.md"),
     ("rules/RULEBOOK.md", "rules/RULEBOOK.md"),
+    ("rules/LESSONS.md", "rules/LESSONS.md"),
+    ("specs/SPEC_STANDARD.md", "specs/SPEC_STANDARD.md"),
     ("specs/TICKET_TEMPLATE.md", "specs/TICKET_TEMPLATE.md"),
     ("specs/WAVE_EXAMPLE.md", "specs/WAVE_EXAMPLE.md"),
+    ("harness/HARNESS.md", "harness/HARNESS.md"),
     ("harness/factory.py", "harness/factory.py"),
+    ("harness/model_broker.py", "harness/model_broker.py"),
+    ("harness/integrator.py", "harness/integrator.py"),
 ]
 
 def detect_stack(root: Path):
@@ -89,22 +98,38 @@ def main():
         config = {
             "project_name": stack["name"],
             "workspace_dir": ".",
-            "max_rounds": 6,
-            "gates": {
+            "max_rounds": 5,
+            "spec_check": {"enabled": True, "max_revisions": 1},
+            "precheck": {
+                "format_cmd": "",
                 "compile_cmd": stack["compile_cmd"],
                 "lint_cmd": stack["lint_cmd"],
+                "max_fixes": 4
+            },
+            "gates": {
                 "test_cmd": stack["test_cmd"],
-                "qual_cmd": ""
+                "bench_cmd": "",
+                "qual_cmd": "",
+                "max_fixes": 4
             },
             "agents": {
+                "runner_type": "cli",
+                "spec_reader_cmd": "opencode run --auto",
                 "builder_cmd": "opencode run --auto",
                 "reviewer_a_cmd": "opencode run --auto",
                 "reviewer_b_cmd": "opencode run --auto",
+                "arbiter_cmd": "opencode run --auto",
+                "harness_editor_cmd": "opencode run --auto",
+                "reflector_cmd": "opencode run --auto",
                 "doctor_cmd": "opencode run --auto"
             },
+            "harness": {"enabled": True, "lessons_file": "rules/LESSONS.md"},
+            "model_broker": {"enabled": False, "url": "http://127.0.0.1:8787"},
+            "doctor": {"max_cases_per_ticket": 2},
             "git": {
                 "auto_commit": True,
-                "commit_prefix": "checkpoint"
+                "commit_prefix": "checkpoint",
+                "park_stopped": True
             }
         }
         config_dest.write_text(json.dumps(config, indent=2), encoding="utf-8")

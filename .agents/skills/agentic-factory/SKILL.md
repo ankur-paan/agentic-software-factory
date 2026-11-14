@@ -40,14 +40,16 @@ Ensure the following directories exist in the project root:
 - `harness/`: Orchestration runner and configuration.
 
 Fetch or generate the template files:
-1. `roles/BUILDER.md`: Builder instructions, constraints, and git immutability rules.
-2. `roles/REVIEWER_A.md`: Reachability, call-graph, and wire execution verification protocol (`R-ENTRY`).
-3. `roles/REVIEWER_B.md`: Contract enforcement, anti-mock (`R-NOFAKE`), and anti-slop (`R-STE`) audit protocol.
-4. `roles/DOCTOR.md`: Forensic triage protocol and root-cause classification (`TASK`, `PRODUCT`, `TEST`, `SPEC`, `PROCESS`, `UNKNOWN`).
-5. `rules/RULEBOOK.md`: The universal engineering constitution.
-6. `specs/TICKET_TEMPLATE.md`: Specification template with `QUAL-CMD:` environment lines.
-7. `specs/WAVE_EXAMPLE.md`: Milestone wave sequencing manifest.
-8. `harness/factory.py`: The standalone Python state machine runner.
+1. `roles/SPEC_READER.md`: Context-free pre-flight specification check.
+2. `roles/BUILDER.md`: Builder instructions, constraints, and git immutability rules.
+3. `roles/REVIEWER_A.md`: Reachability, call-graph, and wire execution verification protocol (`R-ENTRY`).
+4. `roles/REVIEWER_B.md`: Contract enforcement, anti-mock (`R-NOFAKE`), and anti-slop (`R-STE`) audit protocol.
+5. `roles/ARBITER.md`: Evidence-based judge for reviewer disagreements and missing evidence sections.
+6. `roles/HARNESS_EDITOR.md` & `roles/REFLECTOR.md`: Recursive Harnessing (Harness²) task edits and distilled lessons.
+7. `roles/DOCTOR.md`: Forensic triage protocol and root-cause classification (`TASK`, `PRODUCT`, `TEST`, `SPEC`, `PROCESS`, `UNKNOWN`).
+8. `rules/RULEBOOK.md` & `rules/LESSONS.md`: Engineering constitution and distilled lessons.
+9. `specs/SPEC_STANDARD.md`, `specs/TICKET_TEMPLATE.md`, `specs/WAVE_EXAMPLE.md`: Spec standard and templates.
+10. `harness/HARNESS.md`, `harness/factory.py`, `harness/model_broker.py`, `harness/integrator.py`: Orchestrator, optional model broker, and multi-lane integrator.
 
 Alternatively, execute the automated fetcher:
 ```bash
@@ -64,20 +66,34 @@ Write the detected gate commands into `harness/config.json`:
 {
   "project_name": "<Project Name>",
   "workspace_dir": ".",
-  "max_rounds": 6,
-  "gates": {
+  "max_rounds": 5,
+  "spec_check": { "enabled": true, "max_revisions": 1 },
+  "precheck": {
+    "format_cmd": "",
     "compile_cmd": "<detected compile_cmd>",
     "lint_cmd": "<detected lint_cmd>",
+    "max_fixes": 4
+  },
+  "gates": {
     "test_cmd": "<detected test_cmd>",
-    "qual_cmd": ""
+    "bench_cmd": "",
+    "qual_cmd": "",
+    "max_fixes": 4
   },
   "agents": {
     "runner_type": "cli",
+    "spec_reader_cmd": "opencode run --auto",
     "builder_cmd": "opencode run --auto",
     "reviewer_a_cmd": "opencode run --auto",
     "reviewer_b_cmd": "opencode run --auto",
+    "arbiter_cmd": "opencode run --auto",
+    "harness_editor_cmd": "opencode run --auto",
+    "reflector_cmd": "opencode run --auto",
     "doctor_cmd": "opencode run --auto"
   },
+  "harness": { "enabled": true, "lessons_file": "rules/LESSONS.md" },
+  "model_broker": { "enabled": false, "url": "http://127.0.0.1:8787" },
+  "doctor": { "max_cases_per_ticket": 2 },
   "inbox": {
     "enabled": true,
     "escalations_dir": ".factory/inbox/escalations",
@@ -89,7 +105,8 @@ Write the detected gate commands into `harness/config.json`:
   },
   "git": {
     "auto_commit": true,
-    "commit_prefix": "checkpoint"
+    "commit_prefix": "checkpoint",
+    "park_stopped": true
   }
 }
 ```

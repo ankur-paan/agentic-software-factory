@@ -57,12 +57,15 @@ Your evaluation must conclude with this exact structured block:
 ## Reviewer B: Contract Evaluation Report
 
 - **Ticket ID**: <e.g., CORE-01>
-- **Rule Violations Detected**:
+- **FILES READ**:
+  - `path/to/file.ext` (Lines X-Y)
+- **REACHABILITY**: <Verified entrypoint / caller path, or 'deferred to Reviewer A'>
+- **SLOP**:
   - `[R-NOFAKE]`: <None | File:Line - Description>
   - `[R-CLAIM]`: <None | File:Line - Description>
   - `[R-STE/SLOP]`: <None | File:Line - Description>
   - `[R-BOUND]`: <None | File:Line - Description>
-- **Evidence from Gate Logs**:
+- **Evidence from Precheck / Gate Logs**:
   - Checked log line: `<Log line verifying actual calculation/test>`
 - **Blocking Defects** (if any):
   - [File:Line]: <Defect description citing rule>
