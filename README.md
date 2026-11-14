@@ -5,7 +5,7 @@
 [![Autonomous Engineering](https://img.shields.io/badge/engineering-autonomous%20assembly--line-brightgreen.svg)](#where-it-fits)
 [![Anti-Cheat](https://img.shields.io/badge/constitution-R--NOFAKE%20enforced-red.svg)](rules/RULEBOOK.md)
 
-[Try it in 60s](#try-it-in-60-seconds) · [Where it fits](#where-it-fits) · [The 9 roles](#the-9-roles) · [Is it a fit?](#is-it-a-fit) · [Common patterns](#common-patterns)
+[Where it fits](#where-it-fits) · [20s Launch Video](#20-second-launch-video) · [Architecture & Loops](#architecture--control-loops) · [Try it in 60s](#try-it-in-60-seconds) · [The 9 Roles](#the-9-roles) · [Measured in Production](#measured-in-production)
 
 ![Agentic Software Factory Assembly Line](assets/factory-pipeline.gif)
 
@@ -21,6 +21,27 @@ Most AI coding agents are configured as single chatbots. They write code, test t
 - They write **verbose documentation padding** instead of verified software.
 
 The **Agentic Software Factory** replaces the conversational chatbot with an **industrial software assembly line**.
+
+### 20-Second Launch Video
+
+[![Watch the 20-second Agentic Software Factory launch video](assets/factory-launch-poster.jpg)](assets/factory-launch.mp4)
+
+*Click the poster above to play [`assets/factory-launch.mp4`](assets/factory-launch.mp4) (`20s · 1080p · Sound On`) — a quick tour from the `~35%` single-agent mock-cheat problem to live gates, Harness² learning, and the Integrator merge queue.*
+
+### What changes when you put it in the path
+
+- **Zero self-approving hallucination.** The Builder writes code, but can neither approve its own work nor forge reviews.
+- **Zero mock cheats.** Hard constitutional rules (`R-NOFAKE`, `R-ENTRY`) ban mock stubs. Integration tests run against real containers and wire entrypoints.
+- **Zero moving goalposts.** Multi-round convergence (`R-DELTA`) restricts round 2+ reviews to confirmed defects and delta diffs; minor items defer to non-blocking triage.
+- **Zero runaway token loops.** Outer rounds are capped at `5`, with bounded inner fix loops (`pfix <= 4`, `gfix <= 4`, `int-gfix <= 2`). Stalled work transfers to **The Doctor** for forensic classification.
+- **Zero Git state vandalism.** Agents are denied `git commit` and `git checkout`. The harness checkpoints only after dual sign-off and full gates, and the **Integrator** merges multi-lane work onto `trunk`.
+- **Self-learning without rule dilution.** **Harness²** captures task-level adjustments and promotes verified lessons into [`rules/LESSONS.md`](rules/LESSONS.md) (max 60 rules).
+
+---
+
+## Architecture & Control Loops
+
+Every failure has a bounded self-healing loop, and every stalled ticket has a deterministic escalation path:
 
 ```mermaid
 flowchart TD
@@ -47,31 +68,32 @@ flowchart TD
     Inbox -.->|Resume Ruling| Builder
 ```
 
-### What changes when you put it in the path:
+### The 5 Self-Healing Control Loops & Escalation
 
-- **Zero self-approving hallucination.** The Builder writes code, but can neither test nor approve its own diff.
-- **Zero mock cheats.** Hard constitutional rules (`R-NOFAKE`, `R-ENTRY`) ban mock stubs. Integration tests run against live containers.
-- **Zero moving goalposts.** Multi-round convergence (`R-DELTA`) restricts round 2+ reviews to confirmed defects and diffs; minor items defer to non-blocking triage.
-- **Zero runaway token loops.** Outer rounds are strictly capped (default 5), with bounded inner fix loops (`pfix <= 4` on fast precheck, `gfix <= 4` on full gates, `int-gfix <= 2` on merge). Stalled work transfers to **The Doctor** for forensic classification.
-- **Zero Git state vandalism.** Agents are denied `git commit` and `git checkout`. The harness checkpoints only after dual sign-off and full gates, and the **Integrator** merges multi-lane work onto `trunk`.
-- **Self-learning without rule dilution.** **Harness²** captures task-level adjustments and promotes verified lessons into `rules/LESSONS.md` (max 60 rules).
+| Loop | Trigger | Bounded Recovery | Escalation on Exhaustion |
+| :--- | :--- | :--- | :--- |
+| **1. Pre-Flight Spec Gate** | Before Builder starts | [Spec Reader](roles/SPEC_READER.md) validates 5 required sections and rulebook compatibility. | Parks `not-ready` specs in `.factory/inbox/` before tokens are wasted. |
+| **2. Fast Precheck (`pfix`)** | Format, compile, or lint failure | Builder runs focused `pfix` iterations up to `4` times (`precheck.max_fixes`) before reviewers run. | Counts toward the outer 5-round cap; transfers to [The Doctor](roles/DOCTOR.md) if exhausted. |
+| **3. Dual Review, Arbiter & Harness²** | Reviewer split or missing evidence | [Arbiter](roles/ARBITER.md) audits `FILES READ`, `REACHABILITY`, and `SLOP`; `ARBITER: changes` updates `.factory/state/harness/<TICKET>.md` via [Harness Editor](roles/HARNESS_EDITOR.md). | Stalled multi-round convergence parks `refs/stopped` for forensic triage. |
+| **4. Full Gates & Reflector (`gfix`)** | Test, benchmark, or qualification failure | Builder runs `gfix` up to `4` times (`gates.max_fixes`); on pass, [Reflector](roles/REFLECTOR.md) distills proven fixes into [`rules/LESSONS.md`](rules/LESSONS.md). | Failed gates at outer round limit transfer to **The Doctor** (`6` fault classes) and `.factory/inbox/`. |
+| **5. Integrator Merge Queue (`int-gfix`)** | Multi-lane commit meets newer `trunk` | [Integrator](roles/INTEGRATOR.md) dispatches Conflict Resolver (`int-resolve`), Conflict Reviewer (`int-review`), and Integration Fixer (`int-gfix <= 2`) before updating `trunk`. | Resets tree cleanly, sets `refs/bounced/<id>`, holds the lane, and writes an escalation JSON. |
 
 ---
 
 ## Try it in 60 seconds
 
-### 1. Scaffold your project (Fastest)
+### Option A: Paste the skill to your AI assistant (Fastest)
 
-**Option A: Paste to your AI assistant (Antigravity IDE, Claude Code, Cursor, Windsurf)**
+Works in Antigravity IDE, Claude Code, Cursor, or Windsurf:
 
 ```text
 Please scaffold the Agentic Software Factory in this repo following this skill:
 https://raw.githubusercontent.com/ankur-paan/agentic-software-factory/main/skills/agentic-factory/SKILL.md
 ```
 
-Your AI automatically detects your project stack (Rust, Go, Python, TypeScript, etc.), configures the two-tier gate commands in `harness/config.json`, and installs the 9 role specs and rulebook.
+Your assistant detects your stack (Rust, Go, Python, TypeScript, C++), configures two-tier gate commands in `harness/config.json`, and installs all 9 role specs and [`rules/RULEBOOK.md`](rules/RULEBOOK.md).
 
-**Option B: Terminal one-liner**
+### Option B: Terminal one-liner
 
 ```bash
 # Linux / macOS:
@@ -81,11 +103,9 @@ curl -fsSL https://raw.githubusercontent.com/ankur-paan/agentic-software-factory
 irm https://raw.githubusercontent.com/ankur-paan/agentic-software-factory/main/install.ps1 | iex
 ```
 
----
+### Option C: Run the zero-API dry-run demo
 
-### 2. Or test the dry-run demo (The other way)
-
-Clone and run a full simulation of the assembly line with zero API keys required:
+Clone the repository and execute a complete pass of the ticket orchestrator and merge queue locally with zero API keys:
 
 ```bash
 git clone https://github.com/ankur-paan/agentic-software-factory.git
@@ -94,7 +114,7 @@ python harness/factory.py --dry-run --ticket specs/TICKET_TEMPLATE.md
 python harness/integrator.py --dry-run
 ```
 
-**Watch the assembly line in real time:**
+**Observed dry-run output:**
 
 ```text
 [2026-11-14 23:10:43] ============================================================
@@ -124,13 +144,13 @@ python harness/integrator.py --dry-run
 [2026-11-14 23:10:43] [INTEGRATOR] No pending refs/inbox/* entries.
 ```
 
-All execution traces, Harness² task state, inbox cases, and accepted checkpoints are recorded under `.factory/` (`state/events.log`, `state/harness/`, `inbox/`, `state/wave_mn.tsv`).
+Execution logs, Harness² task notes, escalations, and deferred cleanup queues are stored under `.factory/` (`state/events.log`, `state/harness/`, `inbox/`, `state/wave_mn.tsv`).
 
 ---
 
 ## The 9 Roles
 
-The framework enforces strict separation of powers across nine specialized role specs under `roles/`:
+Strict separation of powers across nine role specifications under `roles/`:
 
 | Role | Responsibility | Strict Boundary |
 | :--- | :--- | :--- |
@@ -143,28 +163,6 @@ The framework enforces strict separation of powers across nine specialized role 
 | **[Experience Reflector](roles/REFLECTOR.md)** | **Harness-Level Distiller.** Promotes `KEPT` task edits and recurring defect classes into `rules/LESSONS.md`. | Writes only `rules/LESSONS.md` (max 60 rules); never weakens rules or checks. |
 | **[The Integrator](roles/INTEGRATOR.md)** | **Multi-Lane Merge Queue.** Dispatches Conflict Resolver (`int-resolve`), Conflict Reviewer (`int-review`), and Integration Fixer (`int-gfix <= 2`) before updating `trunk`. | Never drops lane or `trunk` changes; bounces unresolved failures to `refs/bounced/<id>` and holds the lane. |
 | **[The Doctor](roles/DOCTOR.md)** | **Forensic Triage & Wave MN.** Diagnoses stalled tickets (`refs/stopped`) across 6 failure classes (`SPEC`, `HARNESS`, `PRODUCT`, `TEST`, `TASK`, `ENV`) and bundles `LATER` items. | Never modifies product code; issues escalate/requeue rulings via `.factory/inbox/`. |
-
----
-
-## Common patterns
-
-| Pattern | The situation | What the factory does |
-| :--- | :--- | :--- |
-| **Autonomous Greenfield Build** | You need to construct a backend or service from scratch across multiple modules. | Breaks work into sequential **Waves** ([`specs/WAVE_EXAMPLE.md`](specs/WAVE_EXAMPLE.md)), checkpointing clean Git commits after each accepted ticket. |
-| **Parity / Protocol Migration** | Rewriting legacy code into Rust or Go while maintaining exact behavioral equivalence. | Runs live qualification containers against reference implementations; rejects fake shortcuts. |
-| **Continuous Defect Fixing** | Flaky tests or bugs across microservices. | Generates targeted `DR-XX` tickets with failing reproducer tests before writing the fix. |
-| **Unbounded Queue Prevention** | LLMs default to unbounded arrays and infinite memory buffers. | Reviewer B automatically rejects any channel or buffer lacking an explicit capacity cap (`R-BOUND`). |
-
----
-
-## Is it a fit?
-
-| Use Agentic Software Factory when | Look elsewhere when |
-| :--- | :--- |
-| You want autonomous, multi-hour engineering runs that stay on task without drifting. | You want inline IDE autocomplete for completing single lines or comments. |
-| You test against real databases and brokers (PostgreSQL, Redis, Kafka, MQTT). | You prefer unit tests mocked with dummy in-memory fake objects. |
-| You need verifiable, clean Git commit histories for enterprise audit. | You want an agent with unrestricted permissions to push directly to `main`. |
-| You work in Rust, Go, Python, TypeScript, Erlang, or C++. | You are looking for a closed-source, proprietary SaaS platform. |
 
 ---
 
@@ -199,6 +197,28 @@ Empirical metrics measured across hundreds of autonomous software engineering ti
 
 ---
 
+## Common patterns
+
+| Pattern | The situation | What the factory does |
+| :--- | :--- | :--- |
+| **Autonomous Greenfield Build** | You need to construct a backend or service from scratch across multiple modules. | Breaks work into sequential **Waves** ([`specs/WAVE_EXAMPLE.md`](specs/WAVE_EXAMPLE.md)), checkpointing clean Git commits after each accepted ticket. |
+| **Parity / Protocol Migration** | Rewriting legacy code into Rust or Go while maintaining exact behavioral equivalence. | Runs live qualification containers against reference implementations; rejects fake shortcuts. |
+| **Continuous Defect Fixing** | Flaky tests or bugs across microservices. | Generates targeted `DR-XX` tickets with failing reproducer tests before writing the fix. |
+| **Unbounded Queue Prevention** | LLMs default to unbounded arrays and infinite memory buffers. | Reviewer B automatically rejects any channel or buffer lacking an explicit capacity cap (`R-BOUND`). |
+
+---
+
+## Is it a fit?
+
+| Use Agentic Software Factory when | Look elsewhere when |
+| :--- | :--- |
+| You want autonomous, multi-hour engineering runs that stay on task without drifting. | You want inline IDE autocomplete for completing single lines or comments. |
+| You test against real databases and brokers (PostgreSQL, Redis, Kafka, MQTT). | You prefer unit tests mocked with dummy in-memory fake objects. |
+| You need verifiable, clean Git commit histories for enterprise audit. | You want an agent with unrestricted permissions to push directly to `main`. |
+| You work in Rust, Go, Python, TypeScript, Erlang, or C++. | You are looking for a closed-source, proprietary SaaS platform. |
+
+---
+
 ## What else is in the box
 
 - **Autonomous AI Skill.** Packaged under [`skills/agentic-factory/SKILL.md`](skills/agentic-factory/SKILL.md) for instant discovery in Antigravity, Claude Code, and agentic IDEs.
@@ -209,7 +229,7 @@ Empirical metrics measured across hundreds of autonomous software engineering ti
 - **Delta-Only Review & Wave MN Triage.** Built-in 3-tier convergence state machine preventing "moving goalpost syndrome" and auto-batching minor findings.
 - **Forensic Triage Protocol.** The complete diagnostic methodology in [`roles/DOCTOR.md`](roles/DOCTOR.md) to root-cause stuck tasks without human intervention.
 - **Wave Manifests.** Sequence multiple interconnected tickets into verifiable milestones ([`specs/WAVE_EXAMPLE.md`](specs/WAVE_EXAMPLE.md)).
-- **Zero-Dependency Python Harness.** A clean, transparent runner ([`harness/factory.py`](harness/factory.py)) using only Python standard library with CLI and hybrid runner support.
+- **Zero-Dependency Python Harness.** A clean, transparent runner ([`harness/factory.py`](harness/factory.py)) using only Python standard library with CLI and hybrid runner support (`harness/config.example.json` includes full configuration options).
 
 ---
 
